@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>基于lucky的stun内网穿透进阶整合教程</title>
+    <url>/2025/04/03/%E5%9F%BA%E4%BA%8Elucky%E7%9A%84stun%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E8%BF%9B%E9%98%B6%E6%95%B4%E5%90%88%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<p>在互联网跟着学七学八，家里是移动的宽带，只有IPV6，于是在网上各种翻找，也终于按照我自己的使用环境配置了心中所想，本着人人为我我为人人的精神，希望我的教程能给各位朋友带来一些有价值的参考；通过此篇帖子可以实现以下两点：<br>一、stun打洞配置伪DDNS，实现https安全访问，实现域名webhook推送。<br>二、利用cloudflare重定向规则实现IPV4+IPV6双栈访问。  </p>
+<span id="more"></span>
+
+<p>注意：<br>此篇为裁缝型教程，如果看不懂可结合这一篇<a href="https://www.xrgzs.top/posts/lucky-stun-upnp-nat1">使用 Lucky 的 STUN 内网穿透利用 UPNP 和 NAT1 在公网打洞并配置伪 DDNS | 潇然工作室</a>进行配置！  </p>
+<p>补充：<br>此篇帖子不是新手小白扫盲贴，所以有些地方写的不精细，但是能点进来看的都是有一定基础的，如果你需要的是从零开始，那么可以参考我标出来的一篇帖子；如果你是宝宝，那么后面的内容都可以不用看了。  </p>
+<p>场景：<br>因为本人常年出差在外，在家的时间有限，很多地方的WiFi是不具备IPV6的（除开酒店），尤我自己的相册备份是用的MT-photos，所以我既配置IPV6的解析，也配置stun内网穿透，通过cloudflare重定向规则实现MT-photos双栈访问。<br>ps：MT-photos并不能支持双栈自动切换，所以我这个重定向规则实际上是没什么用的。</p>
+<p>部署之前通过<a href="https://www.checkmynat.com/">Check My NAT</a>进行网络NAT测试</p>
+<p>NAT 四种类型:（也是NAT1-NAT4）：  </p>
+<ol start="2">
+<li>Full Cone NAT：全锥形，任何外部主机只要知道这个公网IP和端口，就能向内网主机发送数据。(最容易打洞成功)  <ol start="2">
+<li>Restricted Cone NAT：受限锥形，内网主机需先向外部主机发送数据，该外部主机才能向内网主机发送数据。(排名第二)  </li>
+<li>Port Restricted Cone NAT：端口受限锥形，内网主机需先向外部主机发送数据，该外部主机的特定端口才能向内网主机发送数据。(排名第三)  </li>
+<li>Symmetric NAT：对称形，内网主机与每个外部主机通信时，会分配不同的公网IP和端口，在安全性上最为严格，但也最容易导致连接问题。(排名第四，最难打洞成功，可以放弃）</li>
+</ol>
+</li>
+</ol>
+<p>接下来说一下我的配置：移动网光猫改桥接；PVE宿主机：ikuai拨号，openwrt+lxc容器跑docker+win10；如果需要使用stun穿透，光猫一定要改桥接，减少NAT层级。</p>
+<p>要求：</p>
+<p>一、自备域名一个，哪里买都可以，提前托管到cloudflare。</p>
+<p>二、家里得有网络，因为我自己只用过移动网，联通、电信是否能打通，自测。</p>
+<p>三、lucky会自己部署，不会的可以百度去古大羊大佬的官网去根据教程去学。</p>
+<p>四、想到了再补充。</p>
+<p>上面的都准备好后，在lucky界面做好IPV4域名解析；</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece846704fa.webp" alt="2025-04-02-11-41-32-image.png" title="2025-04-02-11-41-32-image.png" />
+
+<p>添加监听端口这一步很重要，找一个你喜欢的端口26811（尽量高位），后面我们要用到端口转发；</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece848790b9.webp" alt="2025-04-02-11-44-34-image.png" title="2025-04-02-11-44-34-image.png" />
+
+<p>然后添加web规则，添加重定向规则；</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece848530f7.webp" alt="2025-04-02-11-45-08-image.png" title="2025-04-02-11-45-08-image.png" />
+
+<img src="https://image.dooo.ng/c/2025/04/02/67ece84887044.webp" alt="2025-04-02-11-49-12-image.png" title="2025-04-02-11-49-12-image.png" />
+
+<p>证书申请和部署</p>
+<p><img src="https://image.dooo.ng/c/2025/04/02/67ecfee0a30a1.webp" alt="https://image.dooo.ng/c/2025/04/02/67ecfee0a30a1.webp"></p>
+<p>然后需要在路由器做端口转发，我没用过openwrt的转发，用openwrt的自行研究哈；</p>
+<p>内网地址填写lucky的地址，端口填写lucky的监听端口26811，外网地址不用动，外网端口选择一个你喜欢的端口比如33781，用于下面我们做stun打洞使用。</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece84992581.webp" alt="2025-04-02-11-51-09-image.png" title="2025-04-02-11-51-09-image.png" />
+
+<p>在lucky的stun内网穿透界面，增加穿透规则，名称按需填写，穿透端口就填写端口转发的外网端口33781，打开不使用lucky内置端口转发，最后点击修改。</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece849be17c.webp" alt="2025-04-02-12-00-35-image.png" title="2025-04-02-12-00-35-image.png" />
+
+<p>这个时候不出意外的话，你会获得穿透后的地址，由于上面我们做了tls证书部署，这时候直接用穿透的地址是打不开的，web.123456.com:26811也是打不开的，你需要用你的域名+穿透后的端口才打开你的网站。比如:<a href="https://web1.123456.com:45689/">https://web1.123456.com:45689</a></p>
+<p>其它的网页服务，添加子规则即可，无需再配置多个穿透子规则。</p>
+<p>搭配webhook通知使用，使用pushplus推送加来接收端口变更的消息。</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece8493c6b0.webp" alt="2025-04-02-12-37-28-image.png" title="2025-04-02-12-37-28-image.png" />
+
+<p>接口地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://www.pushplus.plus/send</span><br></pre></td></tr></table></figure>
+
+<p>请求方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">POST</span><br></pre></td></tr></table></figure>
+
+<p>请求头：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Content-Type: application/json</span><br></pre></td></tr></table></figure>
+
+<p>请求体：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;token&quot;: &quot;xxxxxxxxxxxxxx这里填你注册的推送加的token&quot;,</span><br><span class="line">    &quot;title&quot;: &quot;公网变化通知&quot;,</span><br><span class="line">    &quot;content&quot;: &quot;更新时间：#&#123;time&#125;\n\n1. web1\n   https://*.123456.com:#&#123;STUN_web1_PORT&#125;&quot;,</span><br><span class="line">    &quot;template&quot;: &quot;txt&quot;</span><br></pre></td></tr></table></figure>
+
+<p>请求体不要照抄，域名要改成你的，最终微信里面的效果应该是下面这样，如果有不适用于web服务的穿透，可继续在后面添加如下规则，依此类推；</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">\n\n2. web2\n http://#&#123;STUN_web2_IP&#125;:#&#123;STUN_web2_PORT&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>最后推送效果应该与截图相似；</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece849c0e8e.webp" alt="2025-04-02-12-40-15-image.png" title="2025-04-02-12-40-15-image.png" />
+
+<img src="https://image.dooo.ng/c/2025/04/02/67ece998d0e78.webp" alt="2025-04-02-12-41-35-image.png" title="2025-04-02-12-41-35-image.png" />
+
+<p>这样你只需要记住你的二级域名前缀即可；</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">web1:https://web1.123456.com:27473;</span><br><span class="line">web2:https://web2.123456.com:27473</span><br></pre></td></tr></table></figure>
+
+<p>以上这样就完成了我们的一步，通过域名+端口实现https安全访问。那么我们怎么通过</p>
+<p>cloud重定向规则实现访问一个地址，自动跳转到对应的域名上呢？意思就是输入c.123456.com，如果有V6地址，则优先跳转到v6的域名web1.123456.com:27472 ，如果没有v6地址，则跳转到web1.123456.com:27473；</p>
+<p>这里我们就需要用到webhook了，首先登录 Cloudflare，点击你托管的域名，在域名的 DNS 设置里面添加两个记录，第一个A记录名称填写为c，填写IPV4地址（114.114.114.114，8.8.8.8等都可以填），第二个AAAA记录，名称也填一样的，填写IPV6地址（2001:4860:4860::8888），两个记录保存好。</p>
+<p><strong>打开小云朵</strong>，<strong>打开小云朵</strong>，<strong>打开小云朵</strong>！！！</p>
+<p>这里打开小云朵后流量不会从cloudflare中转，所以无需担心访问速度。</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece99fc8c8a.webp" alt="2025-04-02-13-53-15-image.png" title="2025-04-02-13-53-15-image.png" />
+
+<img src="https://image.dooo.ng/c/2025/04/02/67ece9a44364c.webp" alt="2025-04-02-13-53-39-image.png" title="2025-04-02-13-53-39-image.png" />
+
+<p>然后来到规则，进入规则 -&gt; 重定向规则，创建两个规则</p>
+<p>第一个是IPV6的规则</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece9aa0fdb9.webp" alt="2025-04-02-13-57-30-image.png" title="2025-04-02-13-57-30-image.png" />
+
+<div>
+concat("https://web1.123456.com:27472填解析好的IPV6域名", http.request.uri.path)
+</div>
+
+<img src="https://image.dooo.ng/c/2025/04/02/67ece9aaaa79a.webp" alt="2025-04-02-14-03-20-image.png" title="2025-04-02-14-03-20-image.png" />
+
+<p>第二个是IPV4的规则</p>
+<div>
+concat("http://66.66.66.66:6666", http.request.uri.path)
+</div>
+
+<img src="https://image.dooo.ng/c/2025/04/02/67ece9abe0467.webp" alt="2025-04-02-14-13-09-image.png" title="2025-04-02-14-13-09-image.png" />
+
+<p>这两个规则创建好后，还需要抓包，推荐使用google浏览器，我用edge抓取老是会崩溃，不知道是不是去广告插件的原因；</p>
+<p>在上面的IPV4规则的界面，按F12进入开发者模式。（下方两张图来源于网络）</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece73a37460.webp" alt="8c94a199f6d725df5109f3a2a23d8864165052.webp" title="8c94a199f6d725df5109f3a2a23d8864165052.webp" />
+
+<div>
+https://dash.cloudflare.com/api/v4/zones/{区域ID}/rulesets/{规则集ID}/rules/{规则ID}
+</div>
+
+<p>按图片找到上面这一串相关的信息；</p>
+<p>然后回到 lucky的stun穿透，编辑我们的穿透规则，找到 Webhook，点击开启，按下图设置</p>
+<img src="https://image.dooo.ng/c/2025/04/02/67ece73aef205.webp" alt="31e119d0b0e680980a187b29c9ac4415288975.webp" title="31e119d0b0e680980a187b29c9ac4415288975.webp" />
+
+<p>接口地址：</p>
+<div>
+https://api.cloudflare.com/client/v4/zones/{区域ID}/rulesets/{规则集ID}/rules/{规则ID}
+</div>
+
+<p>注意此处 API 地址和上面的API地址是有区别的，不要填错了</p>
+<p>使用 Global API Key：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">X-Auth-Email: 你的CF邮箱  </span><br><span class="line">X-Auth-Key: API Key</span><br></pre></td></tr></table></figure>
+
+<p>上面用到的 API Key可到这个链接创建：<a href="https://dash.cloudflare.com/profile/api-tokens">Cloudflare Dashboard | Manage Your Account</a></p>
+<p>请求主体：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;action&quot;: &quot;redirect&quot;,</span><br><span class="line">  &quot;expression&quot;: &quot;(http.host eq \&quot;c.123456.com\&quot;)&quot;,</span><br><span class="line">  &quot;description&quot;: &quot;此处填写规则名称&quot;,</span><br><span class="line">  &quot;action_parameters&quot;: &#123;</span><br><span class="line">    &quot;from_value&quot;: &#123;</span><br><span class="line">      &quot;status_code&quot;: 301,</span><br><span class="line">      &quot;target_url&quot;: &#123;</span><br><span class="line">        &quot;expression&quot;: &quot;concat(\&quot;https://web1.123456.com:#&#123;port&#125;\&quot;, http.request.uri.path)&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;preserve_query_string&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接口调用成功字符串：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;success&quot;: true</span><br></pre></td></tr></table></figure>
+
+<p>最后点击修改即可；</p>
+<p>此时你可以在浏览器输入c.123456.com,看看对应的跳转有没有生效。当然，你需要结合你具体的使用情况做修改；比如你有很多服务需要做这种重定向规则那就没办法了，因为免费的cloudflare只支持10条<strong>单一重定向规则</strong>。</p>
+<p>你也可以只设置跳转V4地址，这样可以足够你使用十条重定向规则，那样的话lucky里面需要把服务单独设置监听端口，相信看完教程的你已经学会举一反三了；你也可以通过书签形式、url短链接的形式来进行使用；总之，一切尽在你的操作之中。</p>
+<p>最后的最后，还有一点想法要说，那就是这种打洞的，经过我在外测试，访问的速度并不快，不如IPV6的，经过我的查询得知：</p>
+<p>这种方案打洞之后的流量都被运营商看作 UDP，可能<strong>会被运营商 QoS</strong>，尤其是<strong>跨省跨运营商</strong>，所以<strong>有能力最好还是申请公网 IP</strong> 。—-此条来源于网络</p>
+<p>完结撒花，如果还有更方便的操作，可以提供出来一起讨论。</p>
+]]></content>
+  </entry>
+</search>
