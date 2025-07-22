@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>lucky通过命令获取局域网其他设备公网IPV6</title>
+    <url>/2025/04/07/lucky%E9%80%9A%E8%BF%87%E5%91%BD%E4%BB%A4%E8%8E%B7%E5%8F%96%E5%B1%80%E5%9F%9F%E7%BD%91%E9%87%8C%E9%9D%A2%E5%85%B6%E4%BB%96%E8%AE%BE%E5%A4%87%E7%9A%84IPV6/</url>
+    <content><![CDATA[<p>我的lucky是安装在旁路由的，我想获取主路由或者获取到局域网内Nas的IPV6地址，把这个地址通过DDNS解析，然后ACL规则放行出来。</p>
+<span id="more"></span>
+
+<h6 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h6><p>lucky做DDNS解析时，获取公网IP方式选择通过脚本获取；输入下方的脚本；点击指令测试，即可显示对应的IPV6地址。</p>
+<img src="https://y.gtimg.cn/music/photo_new/T053M000003ZX3aQ0lBYfl.png" alt="undefined" title="undefined" />
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#脚本为deeepseek生成</span><br><span class="line">#!/bin/sh</span><br><span class="line"></span><br><span class="line"># ---------------------配置部分--------------------</span><br><span class="line"># 网络接口名称（根据实际修改）</span><br><span class="line">interface=&quot;eth0&quot;</span><br><span class="line"></span><br><span class="line"># 目标设备的MAC地址（自行替换）</span><br><span class="line">raw_mac=&quot;BC:24:11:AA:E4:0B&quot;</span><br><span class="line"></span><br><span class="line"># ---------------------自动计算后缀----------------</span><br><span class="line"># 将MAC转换为标准EUI-64格式</span><br><span class="line">mac_suffix=$(</span><br><span class="line">  echo &quot;$raw_mac&quot; |</span><br><span class="line">  # 转换分隔符并处理第七位</span><br><span class="line">  awk -F: &#x27;&#123;</span><br><span class="line">    # 反转第七位（第一个字节的二进制第一位）</span><br><span class="line">    first_byte = sprintf(&quot;%02x&quot;, xor(&quot;0x&quot;$1, 0x02));</span><br><span class="line">    # 插入fffe</span><br><span class="line">    printf &quot;%s%s:%sff:fe%s:%s\n&quot;,</span><br><span class="line">      first_byte, $2, $3, $4, $5$6</span><br><span class="line">  &#125;&#x27;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"># ---------------------获取最新前缀----------------</span><br><span class="line">current_prefix=$(</span><br><span class="line">    ip -6 addr show dev $interface |</span><br><span class="line">    # 精准过滤公网地址</span><br><span class="line">    grep -E &#x27;inet6 (2[0-9a-f]&#123;3&#125;|3[0-9a-f]&#123;3&#125;):&#x27; |</span><br><span class="line">    # 排除临时/废弃地址</span><br><span class="line">    grep -v -E &#x27;deprecated|tentative&#x27; |</span><br><span class="line">    # 按地址添加时间排序（需内核支持）</span><br><span class="line">    sort -k7 |</span><br><span class="line">    # 提取最新地址的前64位（兼容不同前缀长度）</span><br><span class="line">    awk &#x27;/inet6/&#123;split($2,a,&quot;/&quot;);print a[1]&#125;&#x27; |</span><br><span class="line">    # 智能截取前缀（支持/48 /56 /64）</span><br><span class="line">    awk -F: &#x27;&#123;</span><br><span class="line">        len = ($0 ~ /::/) ? 6-(NF-1) : 7;</span><br><span class="line">        for(i=1;i&lt;=4;i++) printf &quot;%s:&quot;,$i;</span><br><span class="line">        print &quot;&quot;</span><br><span class="line">    &#125;&#x27; |</span><br><span class="line">    sed &#x27;s/:$//&#x27;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"># ---------------------生成完整地址----------------</span><br><span class="line">full_ipv6=&quot;$&#123;current_prefix&#125;:$&#123;mac_suffix&#125;&quot;</span><br><span class="line"></span><br><span class="line"># 输出结果</span><br><span class="line">echo &quot;$full_ipv6&quot;</span><br></pre></td></tr></table></figure>
+]]></content>
+  </entry>
+  <entry>
+    <title>备份记录一次数据库降级场景</title>
+    <url>/2025/07/22/sql%20server2017%E6%95%B0%E6%8D%AE%E5%BA%93%E9%99%8D%E7%BA%A7%E8%BF%98%E5%8E%9F%E5%88%B02008/</url>
+    <content><![CDATA[<p>工作需要，有一个bug需要降级后去测试，所以把slq server 2017的数据库降级还原到sql server 2008r2上面。</p>
+<span id="more"></span>
+
+
+<p>一、首先需要从2017上面生成脚本，如下图示：<br><img src="https://tc.z.wiki/autoupload/f/9w10pd7obZa38TzcVrCE8zchoTduccdsLISdDxIncWKyl5f0KlZfm6UsKj-HyTuv/20250722/8veK/2505X1290/1.png" alt="2505X1290/1.png"><br><img src="https://tc.z.wiki/autoupload/f/9w10pd7obZa38TzcVrCE8zchoTduccdsLISdDxIncWKyl5f0KlZfm6UsKj-HyTuv/20250722/egQP/1821X974/2.png" alt="1821X974/2.png"><br><img src="https://tc.z.wiki/autoupload/f/9w10pd7obZa38TzcVrCE8zchoTduccdsLISdDxIncWKyl5f0KlZfm6UsKj-HyTuv/20250722/hl6o/1314X942/3.png" alt="1314X942/3.png"><br><img src="https://tc.z.wiki/autoupload/f/9w10pd7obZa38TzcVrCE8zchoTduccdsLISdDxIncWKyl5f0KlZfm6UsKj-HyTuv/20250722/Vj9E/1950X1135/4.png" alt="1950X1135/4.png"><br><img src="https://tc.z.wiki/autoupload/f/9w10pd7obZa38TzcVrCE8zchoTduccdsLISdDxIncWKyl5f0KlZfm6UsKj-HyTuv/20250722/1wph/1463X934/5.png" alt="1463X934/5.png"><br>二、最后使用cmd，修改你对应的数据库连接地址，账号密码，以及导出来的脚本地址即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sqlcmd -S 127.0.0.1,1433 -U sa -P 1  -d AoYin   -i C:\Users\图丙\Desktop\123.sql</span><br></pre></td></tr></table></figure>
+]]></content>
+  </entry>
+  <entry>
     <title>基于lucky的stun内网穿透进阶整合教程</title>
     <url>/2025/04/03/%E5%9F%BA%E4%BA%8Elucky%E7%9A%84stun%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E8%BF%9B%E9%98%B6%E6%95%B4%E5%90%88%E6%95%99%E7%A8%8B/</url>
     <content><![CDATA[<p>在互联网跟着学七学八，家里是移动的宽带，只有IPV6，于是在网上各种翻找，也终于按照我自己的使用环境配置了心中所想，本着人人为我我为人人的精神，希望我的教程能给各位朋友带来一些有价值的参考；通过此篇帖子可以实现以下两点：<br>一、stun打洞配置伪DDNS，实现https安全访问，实现域名webhook推送。<br>二、利用cloudflare重定向规则实现IPV4+IPV6双栈访问。  </p>
@@ -133,18 +156,6 @@ https://api.cloudflare.com/client/v4/zones/{区域ID}/rulesets/{规则集ID}/rul
 <p>最后的最后，还有一点想法要说，那就是这种打洞的，经过我在外测试，访问的速度并不快，不如IPV6的，经过我的查询得知：</p>
 <p>这种方案打洞之后的流量都被运营商看作 UDP，可能<strong>会被运营商 QoS</strong>，尤其是<strong>跨省跨运营商</strong>，所以<strong>有能力最好还是申请公网 IP</strong> 。—-此条来源于网络</p>
 <p>完结撒花，如果还有更方便的操作，可以提供出来一起讨论。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>lucky通过命令获取局域网其他设备公网IPV6</title>
-    <url>/2025/04/07/lucky%E9%80%9A%E8%BF%87%E5%91%BD%E4%BB%A4%E8%8E%B7%E5%8F%96%E5%B1%80%E5%9F%9F%E7%BD%91%E9%87%8C%E9%9D%A2%E5%85%B6%E4%BB%96%E8%AE%BE%E5%A4%87%E7%9A%84IPV6/</url>
-    <content><![CDATA[<p>我的lucky是安装在旁路由的，我想获取主路由或者获取到局域网内Nas的IPV6地址，把这个地址通过DDNS解析，然后ACL规则放行出来。</p>
-<span id="more"></span>
-
-<h6 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h6><p>lucky做DDNS解析时，获取公网IP方式选择通过脚本获取；输入下方的脚本；点击指令测试，即可显示对应的IPV6地址。</p>
-<img src="https://y.gtimg.cn/music/photo_new/T053M000003ZX3aQ0lBYfl.png" alt="undefined" title="undefined" />
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#脚本为deeepseek生成</span><br><span class="line">#!/bin/sh</span><br><span class="line"></span><br><span class="line"># ---------------------配置部分--------------------</span><br><span class="line"># 网络接口名称（根据实际修改）</span><br><span class="line">interface=&quot;eth0&quot;</span><br><span class="line"></span><br><span class="line"># 目标设备的MAC地址（自行替换）</span><br><span class="line">raw_mac=&quot;BC:24:11:AA:E4:0B&quot;</span><br><span class="line"></span><br><span class="line"># ---------------------自动计算后缀----------------</span><br><span class="line"># 将MAC转换为标准EUI-64格式</span><br><span class="line">mac_suffix=$(</span><br><span class="line">  echo &quot;$raw_mac&quot; |</span><br><span class="line">  # 转换分隔符并处理第七位</span><br><span class="line">  awk -F: &#x27;&#123;</span><br><span class="line">    # 反转第七位（第一个字节的二进制第一位）</span><br><span class="line">    first_byte = sprintf(&quot;%02x&quot;, xor(&quot;0x&quot;$1, 0x02));</span><br><span class="line">    # 插入fffe</span><br><span class="line">    printf &quot;%s%s:%sff:fe%s:%s\n&quot;,</span><br><span class="line">      first_byte, $2, $3, $4, $5$6</span><br><span class="line">  &#125;&#x27;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"># ---------------------获取最新前缀----------------</span><br><span class="line">current_prefix=$(</span><br><span class="line">    ip -6 addr show dev $interface |</span><br><span class="line">    # 精准过滤公网地址</span><br><span class="line">    grep -E &#x27;inet6 (2[0-9a-f]&#123;3&#125;|3[0-9a-f]&#123;3&#125;):&#x27; |</span><br><span class="line">    # 排除临时/废弃地址</span><br><span class="line">    grep -v -E &#x27;deprecated|tentative&#x27; |</span><br><span class="line">    # 按地址添加时间排序（需内核支持）</span><br><span class="line">    sort -k7 |</span><br><span class="line">    # 提取最新地址的前64位（兼容不同前缀长度）</span><br><span class="line">    awk &#x27;/inet6/&#123;split($2,a,&quot;/&quot;);print a[1]&#125;&#x27; |</span><br><span class="line">    # 智能截取前缀（支持/48 /56 /64）</span><br><span class="line">    awk -F: &#x27;&#123;</span><br><span class="line">        len = ($0 ~ /::/) ? 6-(NF-1) : 7;</span><br><span class="line">        for(i=1;i&lt;=4;i++) printf &quot;%s:&quot;,$i;</span><br><span class="line">        print &quot;&quot;</span><br><span class="line">    &#125;&#x27; |</span><br><span class="line">    sed &#x27;s/:$//&#x27;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"># ---------------------生成完整地址----------------</span><br><span class="line">full_ipv6=&quot;$&#123;current_prefix&#125;:$&#123;mac_suffix&#125;&quot;</span><br><span class="line"></span><br><span class="line"># 输出结果</span><br><span class="line">echo &quot;$full_ipv6&quot;</span><br></pre></td></tr></table></figure>
 ]]></content>
   </entry>
 </search>
