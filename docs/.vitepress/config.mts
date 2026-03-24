@@ -1,7 +1,7 @@
 import { defineConfig } from "vitepress";
 import llmstxt from "vitepress-plugin-llms";
 
-const description = [].toString();
+const description = "记录折腾、笔记与随想。";
 
 export default defineConfig({
   title: "图丙 Blog",
@@ -15,8 +15,9 @@ export default defineConfig({
     ["meta", { property: "og:locale", content: "zh-CN" }],
     ["meta", { property: "og:title", content: "图丙 Blog" }],
     ["meta", { property: "og:site_name", content: "图丙 Blog" }],
-    ["meta", { property: "og:image", content: "" }],
-    ["meta", { property: "og:url", content: "" }],
+    ["meta", { property: "og:image", content: "/og.png" }],
+    // TODO: 把这里改成你的最终域名/站点地址（用于分享卡片与 SEO）
+    ["meta", { property: "og:url", content: "https://tuucc.github.io/" }],
     ["meta", { property: "og:description", content: description }],
     ["meta", { name: "description", content: description }],
     ["meta", { name: "author", content: "图丙" }],
