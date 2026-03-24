@@ -36,7 +36,7 @@ export default defineConfig({
     },
   },
   sitemap: {
-    hostname: "https://vp.teek.top",
+    hostname: "https://tuucc.github.io",
     transformItems: (items) => {
       const permalinkItemBak: typeof items = [];
       const permalinks = (globalThis as any).VITEPRESS_CONFIG.site.themeConfig
