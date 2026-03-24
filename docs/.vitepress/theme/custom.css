@@ -1,0 +1,71 @@
+/* 整体配色改成绿色 */
+:root {
+  --vp-c-green-1: #52b788;
+  --vp-c-green-2: #52b788;
+  --vp-c-green-3: #52b788;
+  --vp-c-green-soft: rgba(16, 185, 129, 0.16);
+
+  --vp-c-brand-1: var(--vp-c-green-1);
+  --vp-c-brand-2: var(--vp-c-green-2);
+  --vp-c-brand-3: var(--vp-c-green-3);
+  --vp-c-brand-soft: var(--vp-c-green-soft);
+
+  /* hero 标题渐变：绿系统一 */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #52b788 10%, #22c1c3 90%);
+
+  /* 右侧光晕：绿→青 */
+  --vp-home-hero-image-background-image: radial-gradient(
+    circle at 28% 26%,
+    rgba(255, 255, 255, 0.55),
+    rgba(82, 183, 136, 0.50) 26%,
+    rgba(34, 193, 195, 0.26) 52%,
+    rgba(255, 255, 255, 0) 74%
+  );
+  --vp-home-hero-image-filter: blur(105px);
+}
+
+/* 整体配色改成绿色（暗黑模式） */
+.dark {
+  --vp-c-green-1: #52b788;
+  --vp-c-green-2: #52b788;
+  --vp-c-green-3: #52b788;
+  --vp-c-green-soft: rgba(16, 185, 129, 0.16);
+
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #52b788 10%, #7aa6c2 90%);
+
+  --vp-home-hero-image-background-image: radial-gradient(
+    circle at 30% 30%,
+    rgba(82, 183, 136, 0.28),
+    rgba(122, 166, 194, 0.14) 45%,
+    rgba(0, 0, 0, 0) 72%
+  );
+  --vp-home-hero-image-filter: blur(130px);
+}
+
+/* 引用块配色 */
+.vp-doc blockquote {
+  background-color: #ecf8f3;
+  border-left: 4px solid #42b983 !important;
+}
+/* 引用块配色（暗黑模式） */
+.dark .vp-doc blockquote {
+  background-color: #4a5f53;
+  border-left: 4px solid #b9eed6 !important;
+}
+/* 引用块配色（暗黑模式字体） */
+.dark .vp-doc blockquote > p {
+  color: #92cab2;
+}
+
+/* 搜索框位置：在右侧按钮组左边留出间距 */
+.VPNavBarSearch.search {
+  justify-content: flex-end !important;
+  padding-right: 0 !important;
+}
+
+.VPNavBarSearch.search .DocSearch-Button,
+.VPNavBarSearch.search .VPLocalSearchBox {
+  margin-right: 16px;
+}

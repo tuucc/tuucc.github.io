@@ -1,5 +1,6 @@
 import { defineConfig } from "vitepress";
 import llmstxt from "vitepress-plugin-llms";
+import { blogSidebarItems } from "./sidebar.blog.generated.mts";
 
 const description = "记录折腾、笔记与随想。";
 
@@ -61,43 +62,14 @@ export default defineConfig({
       { text: "博客", link: "/aboutme" },
     ],
 
-    // 侧边栏：仅在 /aboutme 下显示
-    sidebar: {
-    // aboutme 页
-    "/aboutme": [
-      {
-        text: "",
-        items: [{ text: "About Me", link: "/aboutme" }],
-      },
+    // 侧边栏：全站共用（因此从 /aboutme 进入也能直接看到年份分组）
+    sidebar: [
+      { text: "About Me", link: "/aboutme" },
       {
         text: "Blog",
-        collapsed: false,
-        items: [
-          {
-            text: "记一次博客重新推倒重来",
-            link: "/blog/记一次博客重新推倒重来",
-          },
-        ],
+        items: blogSidebarItems,
       },
     ],
-    // 所有 /blog/ 开头的文章页复用同一套侧边栏
-    "/blog/": [
-      {
-        text: "",
-        items: [{ text: "About Me", link: "/aboutme" }],
-      },
-      {
-        text: "Blog",
-        collapsed: false,
-        items: [
-          {
-            text: "记一次博客重新推倒重来",
-            link: "/blog/记一次博客重新推倒重来",
-          },
-        ],
-      },
-    ],
-  },
    
     docFooter: {
       prev: "上一篇",
@@ -122,7 +94,6 @@ export default defineConfig({
       pattern: "https://github.com/tuucc/tuucc.github.io",
     },
     footerInfo: false,
-    // 如果你不是 Teek 主题：用默认 footer（两者可以同时写，Teek 会用 footerInfo）
     footer: {
       message: "",
       copyright: "© 2026 图丙",
