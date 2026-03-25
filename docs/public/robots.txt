@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://body.de5.net/sitemap.xml
