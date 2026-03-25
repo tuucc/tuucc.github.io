@@ -17,7 +17,7 @@ export default defineConfig({
     ["meta", { property: "og:locale", content: "zh-CN" }],
     ["meta", { property: "og:title", content: "图丙 Blog" }],
     ["meta", { property: "og:site_name", content: "图丙 Blog" }],
-    ["meta", { property: "og:image", content: "/og.png" }],
+    ["meta", { property: "og:image", content: "/logo.png" }],
     ["meta", { property: "og:url", content: `${siteUrl}/` }],
     ["meta", { property: "og:description", content: description }],
     ["meta", { name: "description", content: description }],
