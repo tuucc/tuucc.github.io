@@ -3,6 +3,10 @@ export const blogSidebarItems = [
     text: "2026",
     items: [
       {
+        text: "最近的一些日常",
+        link: "/blog/2026-05-26-pond-fishing"
+      },
+      {
         text: "今日无事，池塘钓鱼",
         link: "/blog/2026-03-25-pond-fishing"
       },
